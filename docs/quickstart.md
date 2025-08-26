@@ -1,3 +1,4 @@
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -17,10 +18,14 @@ You can think of Unleash Edge as a lightweight proxy layer between your SDKs and
   </TabItem>
   <TabItem value="security" label="Security & resilience">
     From a security standpoint, Unleash Edge lets you expose a single, SDK-compatible endpoint without opening your Unleash instance to the public, thus reducing the attack surface.
-
     At the same time, Unleash Edge provides an additional layer of resilience, so brief upstream hiccups don't disrupt feature delivery.
 
-    Edge can also run in offline mode, so it doesn't need a connection to an upstream Unleash instance. This can simplify local development or in environments with limited connectivity.
+    Optionally, you can set up multiple layers between your application and the Unleash instance (daisy chaining). This lets you define the optimal configuration for caching and resilience, while adapting Unleash Edge to your architecture's topology.
+  </TabItem>
+  <TabItem value="offline" label="Offline mode">
+    Unleash Edge can also run in offline mode, so it doesn't need a connection to an upstream Unleash instance. This can simplify local development or in environments with limited connectivity.
+
+    Check out [this folder](https://github.com/Unleash/unleash-edge/tree/main/examples) to find sample features files for offline mode.
   </TabItem>
 </Tabs>
 
@@ -28,7 +33,7 @@ You can think of Unleash Edge as a lightweight proxy layer between your SDKs and
 
 Here's what you need before getting started:
 
-1. An [Unleash instance](https://github.com/Unleash/unleash) running locally or remotely (version `4.15` or later)
+1. An [Unleash instance](https://docs.getunleash.io/quickstart) running locally or remotely (version `4.15` or later)
 2. A valid [API token](https://docs.getunleash.io/reference/api-tokens-and-client-keys) for your Unleash instance
 3. [Docker](https://www.docker.com/get-started/) installed and running
 4. Your preferred Unleash SDK in a [sample app](https://github.com/Unleash/unleash-sdk-examples)
@@ -87,11 +92,15 @@ Let's break down the parameters and placeholders in the command above.
 
 <Tabs groupId="method">
   <TabItem value="rust" label="Rust toolchain" default>
-    This is the URL of your Unleash instance. Use the base URL, e.g. `https://app.unleash-hosted.com/testclient` or `http://localhost:4242`.
+    This is the URL of your Unleash instance.
+
+    Use the base URL, e.g. `https://app.unleash-hosted.com/testclient` or `http://localhost:4242`.
   </TabItem>
   <TabItem value="docker" label="Docker">
 
-    This is the URL of your Unleash instance. Use the base URL, e.g. `https://app.unleash-hosted.com/testclient` or `http://localhost:4242`.
+    This is the URL of your Unleash instance.
+
+    Use the base URL, e.g. `https://app.unleash-hosted.com/testclient`.
 
     :::warning[Important note about Docker and localhost]
 
@@ -159,25 +168,213 @@ Once everything is running smoothly, updating your application code is very stra
 3. Restart your app and test it.
 
 
-For example, if you're using the [React example](https://github.com/Unleash/unleash-sdk-examples/tree/main/React), update your `index.tsx` file as follows:
+<Tabs>
+  <TabItem value=".net" label=".NET" default>
+    For example, if you're using the [.NET example](https://github.com/Unleash/unleash-sdk-examples/tree/main/.NET), update the `UNLEASH_API_URL` environment variable in your `.env` file:
 
-```tsx
-<FlagProvider
-  config={{
-// highlight-next-line
-    url: "http://localhost:3063/api/frontend/", // Unleash Edge running locally
-    clientKey: "default:development.unleash-insecure-frontend-api-token",
-    refreshInterval: 15, 
-    appName: "codesandbox-react",
-  }}
->
-```
+    ```text title=".env"
+    UNLEASH_API_URL=http://localhost:3063/api
+    ```
+  </TabItem>
 
-Similarly, if you're using a backend language such as Go, Python, or Rust, update the `UNLEASH_API_URL` environment variable in your `.env` file:
+  <TabItem value="android" label="Android" default>
+    For example, if you're using the [Android example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Android):
 
-```
-UNLEASH_API_URL=http://localhost:3063/api
-```
+    ```kotlin title="app/src/main/java/com/example/myapplication/MyApplication.kt"
+      val instance = DefaultUnleash(
+          androidContext = this,
+          unleashConfig = UnleashConfig.newBuilder(appName = "codesandbox-android")
+              // highlight-next-line
+              .proxyUrl("http://10.0.2.2:3063/api/frontend/")
+              .clientKey("<your_client_token>")
+              .build()
+      )
+    ```
+
+    :::warning[Important note about localhost and device emulators]
+
+    Please note that you need to use `10.0.2.2` from the Android emulator to access `localhost`.
+
+    :::
+  </TabItem>
+
+  <TabItem value="flutter" label="Flutter" default>
+    For example, if you're using the [Flutter example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Flutter):
+
+    ```dart title="unleash_example/lib/main.dart"
+      var unleash = UnleashClient(
+        // highlight-next-line
+        url: Uri.parse('http://localhost:3063/api/frontend/'),
+        clientKey: '<your_client_token>',
+        refreshInterval: 5,
+        appName: 'local-flutter',
+      );
+    ```
+
+    :::warning[Important note about localhost and device emulators]
+
+    Please note that you need to use `10.0.2.2` from the Android emulator to access `localhost`.
+
+    You can use `localhost` from the iOS emulator without issues.
+
+    When using a real iOS device, you need to use your computer's IP address.  Run `ipconfig` on Windows or `ifconfig` on Linux/macOS to identify your IP.
+
+    :::
+  </TabItem>
+
+  <TabItem value="go" label="Go" default>
+    For example, if you're using the [Go example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Go), update the `UNLEASH_API_URL` environment variable in your `.env` file:
+
+    ```text title=".env"
+    UNLEASH_API_URL=http://localhost:3063/api
+    ```
+  </TabItem>
+
+  <TabItem value="java" label="Java" default>
+    For example, if you're using the [Java example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Java):
+
+    ```java title="src/main/java/Main.java"
+      var flag = "example-flag";
+      // highlight-next-line
+      var url = "http://localhost:3063/api/";
+      var token = "<your_client_token>";
+
+    ```
+  </TabItem>
+
+  <TabItem value="javascript" label="JavaScript" default>
+    For example, if you're using the [JavaScript example](https://github.com/Unleash/unleash-sdk-examples/tree/main/JavaScript):
+
+    ```javascript title="src/index.js"
+    const unleash = new UnleashClient({
+        // highlight-next-line
+        url: "http://localhost:3063/api/frontend/",
+        clientKey: "<your_client_token>",
+        appName: "javascript-codesandbox",
+    });
+    ```
+  </TabItem>
+
+
+  <TabItem value="next.js" label="Next.js" default>
+    For example, if you're using the [Next.js example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Next.js), update the `NEXT_PUBLIC_UNLEASH_SERVER_API_URL` environment variable in your `.env` file:
+
+    ```text title=".env"
+    NEXT_PUBLIC_UNLEASH_SERVER_API_URL=http://localhost:3063/api
+    ```
+  </TabItem>
+
+  <TabItem value="node.js" label="Node.js" default>
+    For example, if you're using the [Node.js example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Node.js), update the `UNLEASH_API_URL` environment variable in your `.env` file:
+
+    ```text title=".env"
+    UNLEASH_API_URL=http://localhost:3063/api
+    ```
+  </TabItem>
+
+  <TabItem value="php" label="PHP" default>
+    For example, if you're using the [PHP example](https://github.com/Unleash/unleash-sdk-examples/tree/main/PHP), update the `UNLEASH_API_URL` environment variable in your `.env` file:
+
+    ```text title=".env"
+    UNLEASH_API_URL=http://localhost:3063/api
+    ```
+  </TabItem>
+
+  <TabItem value="python" label="Python" default>
+  For example, if you're using the [Python example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Python), update the `UNLEASH_API_URL` environment variable in your `.env` file:
+
+    ```text title=".env"
+    UNLEASH_API_URL=http://localhost:3063/api
+    ```
+  </TabItem>
+
+  <TabItem value="react" label="React" default>
+    For example, if you're using the [React example](https://github.com/Unleash/unleash-sdk-examples/tree/main/React):
+
+    ```tsx title="src/index.tsx"
+    <FlagProvider
+      config={{
+        // highlight-next-line
+        url: "http://localhost:3063/api/frontend/", // Unleash Edge running locally
+        clientKey: "<your_client_token>",
+        refreshInterval: 15,
+        appName: "codesandbox-react",
+      }}
+    >
+    ```
+  </TabItem>
+
+  <TabItem value="ruby" label="Ruby" default>
+    For example, if you're using the [Ruby example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Ruby), update the `UNLEASH_API_URL` environment variable in your `.env` file:
+
+    ```text title=".env"
+    UNLEASH_API_URL=http://localhost:3063/api
+    ```
+  </TabItem>
+
+  <TabItem value="rust" label="Rust" default>
+    For example, if you're using the [Rust example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Rust), update the `UNLEASH_API_URL` environment variable in your `.env` file:
+
+    ```text title=".env"
+    UNLEASH_API_URL=http://localhost:3063/api
+    ```
+  </TabItem>
+
+  <TabItem value="svelte" label="Svelte" default>
+    For example, if you're using the [Svelte example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Svelte):
+
+    ```javascript title="src/routes/+layout.svelte"
+    const config = {
+      // highlight-next-line
+      url: 'http://localhost:3063/api/frontend/',
+      clientKey: '<your_client_token>',
+      refreshInterval: 5,
+      metricsInterval: 5,
+      appName: 'codesandbox-svelte'
+    };
+    ```
+  </TabItem>
+
+  <TabItem value="swift" label="Swift" default>
+    For example, if you're using the [Swift example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Swift):
+
+    ```swift title="Sources/UnleashExample/main.swift"
+    var unleashClient =  UnleashProxyClientSwift.UnleashClientBase(
+        // highlight-next-line
+        unleashUrl: "http://localhost:3063/api/frontend/",
+        clientKey: "<your_client_token>",
+        refreshInterval: 15,
+        appName: "codesandbox-swift",
+        context: [:]
+    )
+    ```
+
+    :::warning[Important note about localhost and device emulators]
+
+    Please note that you can use `localhost` from the iOS emulator without issues.
+
+    When using a real iOS device, you need to use your computer's IP address.  Run `ipconfig` on Windows or `ifconfig` on Linux/macOS to identify your IP.
+
+    :::
+  </TabItem>
+
+  <TabItem value="vue" label="Vue" default>
+    For example, if you're using the [Vue example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Vue):
+
+    ```javascript title="src/App.vue"
+    const config = {
+      // highlight-next-line
+      url: 'http://localhost:3063/api/frontend/',
+      clientKey: '<your_client_token>',
+      refreshInterval: 5,
+      metricsInterval: 5,
+      appName: 'codesandbox-vue'
+    }
+    ```
+  </TabItem>
+
+</Tabs>
+
 
 ## How to verify your setup
 
