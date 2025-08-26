@@ -1,24 +1,28 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Quickstart
 
 This document will help you get started with Unleash Edge locally.
 
-## Why
+## Why Unleash Edge
 
 You can think of Unleash Edge as a lightweight proxy layer between your SDKs and your Unleash instance. Its goal is to expose the same HTTP interface while providing higher throughput.
 
-### Performance & UX
+<Tabs>
+  <TabItem value="performance" label="Performance & UX" default>
+    Especially for frontend clients, Unleash Edge helps you reduce latency for flag resolution by running closer to your users. For example, Unleash Edge could run on a global CDN (Content Delivery Network) or as part of your on-premises infrastructure.
 
-Especially for frontend clients, Unleash Edge helps you reduce latency for flag resolution by running closer to your users. For example, Unleash Edge could run on a global CDN (Content Delivery Network) or as part of your on-premises infrastructure.
+    Setting up one or more Edge nodes helps you distribute traffic across multiple nodes and reduce the load on your Unleash instance. By default, Unleash Edge relies on in-memory caching, but you can configure it to use Redis or the local filesystem.
+  </TabItem>
+  <TabItem value="security" label="Security & resilience">
+    From a security standpoint, Unleash Edge lets you expose a single, SDK-compatible endpoint without opening your Unleash instance to the public, thus reducing the attack surface.
 
-Setting up one or more Edge nodes helps you distribute traffic across multiple nodes and reduce the load on your Unleash instance. By default, Unleash Edge relies on in-memory caching, but you can configure it to use Redis or the local filesystem.
+    At the same time, Unleash Edge provides an additional layer of resilience, so brief upstream hiccups don't disrupt feature delivery.
 
-### Security & resilience
-
-From a security standpoint, Unleash Edge lets you expose a single, SDK-compatible endpoint without opening your Unleash instance to the public, thus reducing the attack surface.
-
-At the same time, Unleash Edge provides an additional layer of resilience, so brief upstream hiccups don't disrupt feature delivery.
-
-Edge can also run in offline mode, so it doesn't need a connection to an upstream Unleash instance. This can simplify local development or in environments with limited connectivity.
+    Edge can also run in offline mode, so it doesn't need a connection to an upstream Unleash instance. This can simplify local development or in environments with limited connectivity.
+  </TabItem>
+</Tabs>
 
 ## Prerequisites
 
@@ -34,101 +38,119 @@ Here's what you need before getting started:
 
 First, make sure your Unleash instance is running (locally or remotely) and generate a new client token.
 
-<details>
-  <summary>Using the Rust toolchain</summary>
 
-  If you're comfortable with the Rust toolchain, install the CLI with cargo binstall (or [from source](https://github.com/Unleash/unleash-edge/blob/main/docs/development-guide.md)):
+<Tabs groupId="method">
+  <TabItem value="rust" label="Rust toolchain" default>
 
-  ```shell
-  cargo binstall unleash-edge
-  ```
+    If you're comfortable with the Rust toolchain, install the CLI with cargo binstall (or [from source](https://github.com/Unleash/unleash-edge/blob/main/docs/development-guide.md)):
 
-  Then launch it:
+    ```shell
+    cargo binstall unleash-edge
+    ```
 
-  ```shell
-  unleash-edge edge \
-    --strict \
-    --upstream-url <your_unleash_instance> \
-    --tokens '<your_client_token>'
-  ```
+    Then launch it:
 
-</details>
+    ```shell
+    unleash-edge edge \
+      --strict \
+      --upstream-url <your_unleash_instance> \
+      --tokens '<your_client_token>'
+    ```
 
-<details>
-  <summary>Using Docker</summary>
+  </TabItem>
+  <TabItem value="docker" label="Docker">
+    Launch Unleash Edge locally with Docker:
 
-  Launch Unleash Edge locally with Docker:
+    ```shell
+    docker run -it \
+      -p 3063:3063 \
+      -e STRICT=true \
+      -e UPSTREAM_URL=<your_unleash_instance> \
+      -e TOKENS='<your_client_token>' \
+      unleashorg/unleash-edge \
+      edge
+    ```
 
-  ```shell
-  docker run -it \
-    -p 3063:3063 \
-    -e STRICT=true \
-    -e UPSTREAM_URL=<your_unleash_instance> \
-    -e TOKENS='<your_client_token>' \
-    unleashorg/unleash-edge \
-    edge
-  ```
+    By default, the command above uses the latest `unleashorg/unleash-edge` tag. Feel free to pick a specific version from the list of [tags on Docker Hub](https://hub.docker.com/r/unleashorg/unleash-edge).
 
-  By default, the command above uses the latest `unleashorg/unleash-edge` tag. Feel free to pick a specific version from the list of [tags on Docker Hub](https://hub.docker.com/r/unleashorg/unleash-edge). 
+  </TabItem>
+</Tabs>
 
-</details>
-
-### Required parameters
+#### Required parameters
 
 Let's break down the parameters and placeholders in the command above.
 
-#### `<your_unleash_instance>`
+---
 
-This is the URL of your Unleash instance. Use the base URL, e.g. `https://app.unleash-hosted.com/testclient` or `http://localhost:4242`.
-
-<details>
-  <summary>⚠️ Important note when using Docker</summary>
-
-  When using Docker with a local Unleash instance, `localhost` will refer to the container itself so you cannot simply use `http://localhost:4242`.
-  You'll need to use a different hostname, depending on where the Unleash instance is running.
-
-  #### Solution 1: use host.docker.internal to reach the host
-
-  The easiest solution when using Docker Desktop is to reference the Unleash instance as `http://host.docker.internal:4242`.
-
-  On Linux, you also need to define the host with `--add-host=host.docker.internal:host-gateway`, or just use `--network=host`.
-
-  #### Solution 2: run on the same user-defined network
-
-  If Unleash runs locally on Docker as well, you could run both containers on the same network.
-
-  When launching Unleash with `docker compose up`, you could use the [default Compose network](https://docs.docker.com/compose/how-tos/networking/) named `unleash_default` and reference the instance as `web`. In your Edge launch command, it will look like `--network unleash_default -e UPSTREAM_URL=http://web:4242`.
-
-  If you're not using the default Compose setup or if you prefer a bit of decoupling, you can create a custom network:
-
-  ```shell
-  # define custom network
-  docker network create unleash-net
-
-  # launch Unleash
-  docker run -d --name unleash --network unleash-net ....
-
-  # launch Unleash Edge
-  docker run -it --network unleash-net -e UPSTREAM_URL=http://unleash:4242 ....
-  ```
-
-</details>
+### `<your_unleash_instance>`
 
 
-#### `<your_client_token>`
+<Tabs groupId="method">
+  <TabItem value="rust" label="Rust toolchain" default>
+    This is the URL of your Unleash instance. Use the base URL, e.g. `https://app.unleash-hosted.com/testclient` or `http://localhost:4242`.
+  </TabItem>
+  <TabItem value="docker" label="Docker">
 
-This API token is required when launching Unleash Edge in strict mode, which is recommended starting with `v19.2+`.
+    This is the URL of your Unleash instance. Use the base URL, e.g. `https://app.unleash-hosted.com/testclient` or `http://localhost:4242`.
+
+    :::warning[Important note about Docker and localhost]
+
+    When using Docker with a local Unleash instance, `localhost` will refer to the container itself so you cannot simply use `http://localhost:4242`.
+    You'll need to use a different hostname, depending on where the Unleash instance is running.
+
+    #### Solution 1: use host.docker.internal to reach the host
+
+    The easiest solution when using Docker Desktop is to reference localhost as `host.docker.internal`.
+
+    On Linux, you also need to define the host with `--add-host=host.docker.internal:host-gateway`, or just use `--network=host`.
+
+    Then you can set your upstream URL to `http:://host.docker.internal:4242`.
+
+    #### Solution 2: run on the same user-defined network
+
+    If Unleash runs locally on Docker as well, you could run both containers on the same network.
+
+    When launching Unleash with `docker compose up`, you could use the [default Compose network](https://docs.docker.com/compose/how-tos/networking/) named `unleash_default` and reference the instance as `web`.
+
+    Your launch command will look like `--network unleash_default -e UPSTREAM_URL=http://web:4242`.
+
+    If you prefer decoupling the network and service names, you can create a custom network:
+
+    ```shell
+    # define custom network
+    docker network create unleash-net
+
+    # launch Unleash
+    docker run -d --name unleash --network unleash-net ....
+
+    # launch Unleash Edge
+    docker run -it --network unleash-net -e UPSTREAM_URL=http://unleash:4242 ....
+    ```
+
+    :::
+  </TabItem>
+</Tabs>
+
+---
+
+### `<your_client_token>`
+
+This API token is required in strict mode, which is recommended since `v19.2+`.
 
 You can generate a new API token by visiting your Unleash instance, under **Admin settings → Access control → API access**.
 Click **New API token**, give it a name, and confirm the default values.
 
 Note: make sure you keep the single quotes in `-e TOKENS='...'` so the `*` isn't expanded by your shell. 
 
-## How to point your SDK at Unleash Edge
+## How to update your application
 
-**Checkpoint**: Before you continue, make sure Unleash Edge is running on port `3063`.
+Before you continue, make sure Unleash Edge is running on port `3063`.
 
-You can verify this by fetching `http://localhost:3063/internal-backstage/health`. This endpoint should respond with `{"status":"OK"}`.
+You can verify this by fetching `http://localhost:3063/internal-backstage/health`.
+
+This endpoint should respond with `{"status":"OK"}`.
+
+---
 
 Once everything is running smoothly, updating your application code is very straightforward:
 
@@ -141,13 +163,13 @@ For example, if you're using the [React example](https://github.com/Unleash/unle
 
 ```tsx
 <FlagProvider
-    config={{
+  config={{
+// highlight-next-line
     url: "http://localhost:3063/api/frontend/", // Unleash Edge running locally
-    clientKey:
-        "default:development.unleash-insecure-frontend-api-token", 
+    clientKey: "default:development.unleash-insecure-frontend-api-token",
     refreshInterval: 15, 
     appName: "codesandbox-react",
-    }}
+  }}
 >
 ```
 
@@ -157,7 +179,7 @@ Similarly, if you're using a backend language such as Go, Python, or Rust, updat
 UNLEASH_API_URL=http://localhost:3063/api
 ```
 
-## Verification
+## How to verify your setup
 
 Should you encounter any issues while connecting your SDK to Unleash Edge, use the following commands to help identify the problem.
 
