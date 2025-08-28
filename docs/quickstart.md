@@ -1,4 +1,3 @@
-
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -8,13 +7,15 @@ This document will help you get started with Unleash Edge locally.
 
 ## Why Unleash Edge
 
-You can think of Unleash Edge as a lightweight proxy layer between your SDKs and your Unleash instance. Its goal is to expose the same HTTP interface while providing higher throughput.
+You can think of Unleash Edge as a lightweight proxy layer between your SDKs and your Unleash instance.
+
+Its goal is to expose the same HTTP interface while providing higher throughput.
 
 <Tabs>
   <TabItem value="performance" label="Performance & UX" default>
     Especially for frontend clients, Unleash Edge helps you reduce latency for flag resolution by running closer to your users. For example, Unleash Edge could run on a global CDN (Content Delivery Network) or as part of your on-premises infrastructure.
 
-    Setting up one or more Edge nodes helps you distribute traffic across multiple nodes and reduce the load on your Unleash instance. By default, Unleash Edge relies on in-memory caching, but you can configure it to use Redis or the local filesystem.
+    Setting up one or more Edge nodes helps you distribute traffic and reduce the load on your Unleash instance. By default, Unleash Edge relies on in-memory caching, but you can configure it to use Redis or the local filesystem.
   </TabItem>
   <TabItem value="security" label="Security & resilience">
     From a security standpoint, Unleash Edge lets you expose a single, SDK-compatible endpoint without opening your Unleash instance to the public, thus reducing the attack surface.
@@ -23,7 +24,7 @@ You can think of Unleash Edge as a lightweight proxy layer between your SDKs and
     Optionally, you can set up multiple layers between your application and the Unleash instance (daisy chaining). This lets you define the optimal configuration for caching and resilience, while adapting Unleash Edge to your architecture's topology.
   </TabItem>
   <TabItem value="offline" label="Offline mode">
-    Unleash Edge can also run in offline mode, so it doesn't need a connection to an upstream Unleash instance. This can simplify local development or in environments with limited connectivity.
+    Unleash Edge can also run in offline mode, so it doesn't need a connection to an upstream Unleash instance. This can simplify local development or help in environments with limited connectivity.
 
     Check out [this folder](https://github.com/Unleash/unleash-edge/tree/main/examples) to find sample features files for offline mode.
   </TabItem>
@@ -46,8 +47,7 @@ First, make sure your Unleash instance is running (locally or remotely) and gene
 
 <Tabs groupId="method">
   <TabItem value="rust" label="Rust toolchain" default>
-
-    If you're comfortable with the Rust toolchain, install the CLI with cargo binstall (or [from source](https://github.com/Unleash/unleash-edge/blob/main/docs/development-guide.md)):
+    If you're comfortable with the Rust toolchain, install the CLI with [cargo binstall](https://github.com/cargo-bins/cargo-binstall?tab=readme-ov-file#installation) (or [from source](https://github.com/Unleash/unleash-edge/blob/main/docs/development-guide.md)):
 
     ```shell
     cargo binstall unleash-edge
@@ -63,6 +63,33 @@ First, make sure your Unleash instance is running (locally or remotely) and gene
     ```
 
   </TabItem>
+
+  <TabItem value="github-release" label="GitHub Release installer">
+    You can install prebuilt binaries for your OS directly from GitHub Releases:
+
+    ```shell
+    curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Unleash/unleash-edge/releases/download/<version>/unleash-edge-installer.sh | sh
+    ```
+
+    :::info[GitHub Releases versioning]
+
+    Make sure to replace `<version>` with a valid GitHub Release tag such as `v19.15.0`.
+
+    You can pick a valid version from the list of [releases on GitHub](https://github.com/Unleash/unleash-edge/releases).
+
+    :::
+
+    Then launch it:
+
+    ```shell
+    unleash-edge edge \
+      --strict \
+      --upstream-url <your_unleash_instance> \
+      --tokens '<your_client_token>'
+    ```
+
+  </TabItem>
+
   <TabItem value="docker" label="Docker">
     Launch Unleash Edge locally with Docker:
 
@@ -76,14 +103,20 @@ First, make sure your Unleash instance is running (locally or remotely) and gene
       edge
     ```
 
-    By default, the command above uses the latest `unleashorg/unleash-edge` tag. Feel free to pick a specific version from the list of [tags on Docker Hub](https://hub.docker.com/r/unleashorg/unleash-edge).
+    :::info[Docker Image versioning]
+
+    By default, the command above uses the latest `unleashorg/unleash-edge` tag.
+
+    Feel free to pick a specific version from the list of [tags on Docker Hub](https://hub.docker.com/r/unleashorg/unleash-edge).
+
+    :::
 
   </TabItem>
 </Tabs>
 
 #### Required parameters
 
-Let's break down the parameters and placeholders in the command above.
+Let's break down the parameters you need to replace in the command above.
 
 ---
 
@@ -91,11 +124,19 @@ Let's break down the parameters and placeholders in the command above.
 
 
 <Tabs groupId="method">
+
   <TabItem value="rust" label="Rust toolchain" default>
     This is the URL of your Unleash instance.
 
     Use the base URL, e.g. `https://app.unleash-hosted.com/testclient` or `http://localhost:4242`.
   </TabItem>
+
+  <TabItem value="github-release" label="GitHub Release installer">
+    This is the URL of your Unleash instance.
+
+    Use the base URL, e.g. `https://app.unleash-hosted.com/testclient` or `http://localhost:4242`.
+  </TabItem>
+
   <TabItem value="docker" label="Docker">
 
     This is the URL of your Unleash instance.
@@ -107,34 +148,38 @@ Let's break down the parameters and placeholders in the command above.
     When using Docker with a local Unleash instance, `localhost` will refer to the container itself so you cannot simply use `http://localhost:4242`.
     You'll need to use a different hostname, depending on where the Unleash instance is running.
 
-    #### Solution 1: use host.docker.internal to reach the host
+    <Tabs>
 
-    The easiest solution when using Docker Desktop is to reference localhost as `host.docker.internal`.
+      <TabItem value="host-docker-internal" label="Solution 1: use host.docker.internal" default>
+        The easiest solution when using Docker Desktop is to reference the host as `host.docker.internal`.
 
-    On Linux, you also need to define the host with `--add-host=host.docker.internal:host-gateway`, or just use `--network=host`.
+        On Linux, you also need to define the host with `--add-host=host.docker.internal:host-gateway`, or just use `--network=host`.
 
-    Then you can set your upstream URL to `http:://host.docker.internal:4242`.
+        Then you can set your upstream URL to `http:://host.docker.internal:4242`.
+      </TabItem>
 
-    #### Solution 2: run on the same user-defined network
+      <TabItem value="custom-network" label="Solution 2: use a custom network">
+        If Unleash runs locally on Docker as well, you could run both containers on the same network.
 
-    If Unleash runs locally on Docker as well, you could run both containers on the same network.
+        When launching Unleash with `docker compose up`, you could use the [default Compose network](https://docs.docker.com/compose/how-tos/networking/) named `unleash_default` and reference the instance as `web`.
 
-    When launching Unleash with `docker compose up`, you could use the [default Compose network](https://docs.docker.com/compose/how-tos/networking/) named `unleash_default` and reference the instance as `web`.
+        Your launch command will look like `--network unleash_default -e UPSTREAM_URL=http://web:4242`.
 
-    Your launch command will look like `--network unleash_default -e UPSTREAM_URL=http://web:4242`.
+        If you prefer decoupling the network and service names, you can create a custom network:
 
-    If you prefer decoupling the network and service names, you can create a custom network:
+        ```shell
+        # define custom network
+        docker network create unleash-net
 
-    ```shell
-    # define custom network
-    docker network create unleash-net
+        # launch Unleash
+        docker run -d --name unleash --network unleash-net ....
 
-    # launch Unleash
-    docker run -d --name unleash --network unleash-net ....
+        # launch Unleash Edge
+        docker run -it --network unleash-net -e UPSTREAM_URL=http://unleash:4242 ....
+        ```
+      </TabItem>
 
-    # launch Unleash Edge
-    docker run -it --network unleash-net -e UPSTREAM_URL=http://unleash:4242 ....
-    ```
+    </Tabs>
 
     :::
   </TabItem>
