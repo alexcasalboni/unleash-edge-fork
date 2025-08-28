@@ -21,12 +21,12 @@ Its goal is to expose the same HTTP interface while providing higher throughput.
     From a security standpoint, Unleash Edge lets you expose a single, SDK-compatible endpoint without opening your Unleash instance to the public, thus reducing the attack surface.
     At the same time, Unleash Edge provides an additional layer of resilience, so brief upstream hiccups don't disrupt feature delivery.
 
-    Optionally, you can set up multiple layers between your application and the Unleash instance (daisy chaining). This lets you define the optimal configuration for caching and resilience, while adapting Unleash Edge to your architecture's topology.
+    Optionally, you can set up multiple layers between your application and the Unleash instance (daisy-chaining). This lets you define the optimal configuration for caching and resilience, while adapting Unleash Edge to your architecture's topology.
   </TabItem>
   <TabItem value="offline" label="Offline mode">
     Unleash Edge can also run in offline mode, so it doesn't need a connection to an upstream Unleash instance. This can simplify local development or help in environments with limited connectivity.
 
-    Check out [this folder](https://github.com/Unleash/unleash-edge/tree/main/examples) to find sample features files for offline mode.
+    Check out [this folder](https://github.com/Unleash/unleash-edge/tree/main/examples) to find sample feature files for offline mode.
   </TabItem>
 </Tabs>
 
@@ -42,7 +42,7 @@ Here's what you need before getting started:
 
 ## How to run Unleash Edge locally
 
-First, make sure your Unleash instance is running (locally or remotely) and generate a new client token.
+First, make sure your Unleash instance is running (locally or remotely) and generate a new API (backend) token.
 
 
 <Tabs groupId="method">
@@ -91,7 +91,7 @@ First, make sure your Unleash instance is running (locally or remotely) and gene
 
   </TabItem>
 
-  <TabItem value="docker-compose" label="Docker Compose" default>
+  <TabItem value="docker-compose" label="Docker Compose">
     Launch the [examples/docker-compose.yml](https://github.com/Unleash/unleash-edge/blob/main/examples/docker-compose.yml) file:
 
     ```shell
@@ -180,7 +180,7 @@ Let's break down the parameters you need to replace in the command above.
 
         On Linux, you also need to define the host with `--add-host=host.docker.internal:host-gateway`, or just use `--network=host`.
 
-        Then you can set your upstream URL to `http:://host.docker.internal:4242`.
+        Then you can set your upstream URL to `http://host.docker.internal:4242`.
       </TabItem>
 
       <TabItem value="custom-network" label="Solution 2: use a custom network">
@@ -249,7 +249,7 @@ Once everything is running smoothly, you can update your application code.
     ```
   </TabItem>
 
-  <TabItem value="android" label="Android" default>
+  <TabItem value="android" label="Android">
     For example, if you're using the [Android example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Android):
 
     ```kotlin title="app/src/main/java/com/example/myapplication/MyApplication.kt"
@@ -271,7 +271,7 @@ Once everything is running smoothly, you can update your application code.
     :::
   </TabItem>
 
-  <TabItem value="flutter" label="Flutter" default>
+  <TabItem value="flutter" label="Flutter">
     For example, if you're using the [Flutter example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Flutter):
 
     ```dart title="unleash_example/lib/main.dart"
@@ -296,7 +296,7 @@ Once everything is running smoothly, you can update your application code.
     :::
   </TabItem>
 
-  <TabItem value="go" label="Go" default>
+  <TabItem value="go" label="Go">
     For example, if you're using the [Go example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Go), update the API URL and token in your `.env` file:
 
     ```text title=".env"
@@ -305,7 +305,7 @@ Once everything is running smoothly, you can update your application code.
     ```
   </TabItem>
 
-  <TabItem value="java" label="Java" default>
+  <TabItem value="java" label="Java">
     For example, if you're using the [Java example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Java):
 
     ```java title="src/main/java/Main.java"
@@ -318,7 +318,7 @@ Once everything is running smoothly, you can update your application code.
     ```
   </TabItem>
 
-  <TabItem value="javascript" label="JavaScript" default>
+  <TabItem value="javascript" label="JavaScript">
     For example, if you're using the [JavaScript example](https://github.com/Unleash/unleash-sdk-examples/tree/main/JavaScript):
 
     ```javascript title="src/index.js"
@@ -333,7 +333,7 @@ Once everything is running smoothly, you can update your application code.
   </TabItem>
 
 
-  <TabItem value="next.js" label="Next.js" default>
+  <TabItem value="next.js" label="Next.js">
     For example, if you're using the [Next.js example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Next.js), update the API URL and token in your `.env` file:
 
     ```text title=".env"
@@ -342,7 +342,7 @@ Once everything is running smoothly, you can update your application code.
     ```
   </TabItem>
 
-  <TabItem value="node.js" label="Node.js" default>
+  <TabItem value="node.js" label="Node.js">
     For example, if you're using the [Node.js example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Node.js), update the API URL and token in your `.env` file:
 
     ```text title=".env"
@@ -351,7 +351,7 @@ Once everything is running smoothly, you can update your application code.
     ```
   </TabItem>
 
-  <TabItem value="php" label="PHP" default>
+  <TabItem value="php" label="PHP">
     For example, if you're using the [PHP example](https://github.com/Unleash/unleash-sdk-examples/tree/main/PHP), update the API URL and token in your `.env` file:
 
     ```text title=".env"
@@ -360,7 +360,7 @@ Once everything is running smoothly, you can update your application code.
     ```
   </TabItem>
 
-  <TabItem value="python" label="Python" default>
+  <TabItem value="python" label="Python">
   For example, if you're using the [Python example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Python), update the API URL and token in your `.env` file:
 
     ```text title=".env"
@@ -369,7 +369,7 @@ Once everything is running smoothly, you can update your application code.
     ```
   </TabItem>
 
-  <TabItem value="react" label="React" default>
+  <TabItem value="react" label="React">
     For example, if you're using the [React example](https://github.com/Unleash/unleash-sdk-examples/tree/main/React):
 
     ```tsx title="src/index.tsx"
@@ -386,7 +386,7 @@ Once everything is running smoothly, you can update your application code.
     ```
   </TabItem>
 
-  <TabItem value="ruby" label="Ruby" default>
+  <TabItem value="ruby" label="Ruby">
     For example, if you're using the [Ruby example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Ruby), update the API URL and token in your `.env` file:
 
     ```text title=".env"
@@ -395,7 +395,7 @@ Once everything is running smoothly, you can update your application code.
     ```
   </TabItem>
 
-  <TabItem value="rust" label="Rust" default>
+  <TabItem value="rust" label="Rust">
     For example, if you're using the [Rust example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Rust), update the API URL and token in your `.env` file:
 
     ```text title=".env"
@@ -404,7 +404,7 @@ Once everything is running smoothly, you can update your application code.
     ```
   </TabItem>
 
-  <TabItem value="svelte" label="Svelte" default>
+  <TabItem value="svelte" label="Svelte">
     For example, if you're using the [Svelte example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Svelte):
 
     ```javascript title="src/routes/+layout.svelte"
@@ -420,7 +420,7 @@ Once everything is running smoothly, you can update your application code.
     ```
   </TabItem>
 
-  <TabItem value="swift" label="Swift" default>
+  <TabItem value="swift" label="Swift">
     For example, if you're using the [Swift example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Swift):
 
     ```swift title="Sources/UnleashExample/main.swift"
@@ -444,7 +444,7 @@ Once everything is running smoothly, you can update your application code.
     :::
   </TabItem>
 
-  <TabItem value="vue" label="Vue" default>
+  <TabItem value="vue" label="Vue">
     For example, if you're using the [Vue example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Vue):
 
     ```javascript title="src/App.vue"
