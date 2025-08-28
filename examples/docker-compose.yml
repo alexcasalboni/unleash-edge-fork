@@ -1,6 +1,7 @@
 services:
   unleash:
     # pin to 7.1.0 to avoid "backend" token type issue
+    # see https://github.com/Unleash/unleash/pull/10500#issuecomment-3233058650
     image: unleashorg/unleash-server:7.1.0
     pull_policy: always
     ports:
