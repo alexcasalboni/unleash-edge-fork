@@ -1,8 +1,10 @@
 services:
   unleash:
-    # pin to 7.1.0 to avoid "backend" token type issue
+    # note: 7.1.1 is not compatible ()"backend" token type issue)
     # see https://github.com/Unleash/unleash/pull/10500#issuecomment-3233058650
-    image: unleashorg/unleash-server:7.1.0
+    # and https://github.com/Unleash/unleash-edge/issues/1130
+    # update: the issue was fixed in 7.1.2
+    image: unleashorg/unleash-server:7.1.2
     pull_policy: always
     ports:
       - "4242:4242"
