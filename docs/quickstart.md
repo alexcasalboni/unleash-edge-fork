@@ -60,7 +60,7 @@ First, make sure your Unleash instance is running (locally or remotely) and gene
     unleash-edge edge \
       --strict \
       --upstream-url <your_unleash_instance> \
-      --tokens '<your_client_token>'
+      --tokens '<your_backend_token>'
     ```
 
   </TabItem>
@@ -86,13 +86,13 @@ First, make sure your Unleash instance is running (locally or remotely) and gene
     unleash-edge edge \
       --strict \
       --upstream-url <your_unleash_instance> \
-      --tokens '<your_client_token>'
+      --tokens '<your_backend_token>'
     ```
 
   </TabItem>
 
   <TabItem value="docker-compose" label="Docker Compose" default>
-    Launch the `examples/docker-compose.yml` file:
+    Launch the [examples/docker-compose.yml](https://github.com/Unleash/unleash-edge/blob/main/examples/docker-compose.yml) file:
 
     ```shell
     git clone https://github.com/unleash/unleash-edge/
@@ -117,7 +117,7 @@ First, make sure your Unleash instance is running (locally or remotely) and gene
       -p 3063:3063 \
       -e STRICT=true \
       -e UPSTREAM_URL=<your_unleash_instance> \
-      -e TOKENS='<your_client_token>' \
+      -e TOKENS='<your_backend_token>' \
       unleashorg/unleash-edge \
       edge
     ```
@@ -212,7 +212,7 @@ Let's break down the parameters you need to replace in the command above.
 
 ---
 
-### `<your_client_token>`
+### `<your_backend_token>`
 
 This API token is required in strict mode, which is recommended since `v19.2+`.
 
@@ -231,19 +231,21 @@ This endpoint should respond with `{"status":"OK"}`.
 
 ---
 
-Once everything is running smoothly, updating your application code is very straightforward:
+Once everything is running smoothly, you can update your application code.
 
 1. Identify the code or configuration file where the Unleash instance URL is defined.
-2. Update it to use the local Unleash Edge on `http://localhost:3063`.
-3. Restart your app and test it.
+2. Update the SDK configuration to use `http://localhost:3063`.
+3. Make sure the SDK configuration includes a valid API token.
+4. Restart your app and test it.
 
 
 <Tabs>
   <TabItem value=".net" label=".NET" default>
-    For example, if you're using the [.NET example](https://github.com/Unleash/unleash-sdk-examples/tree/main/.NET), update the `UNLEASH_API_URL` environment variable in your `.env` file:
+    For example, if you're using the [.NET example](https://github.com/Unleash/unleash-sdk-examples/tree/main/.NET), update the API URL and token in your `.env` file:
 
     ```text title=".env"
     UNLEASH_API_URL=http://localhost:3063/api
+    UNLEASH_API_TOKEN=<your_backend_token>
     ```
   </TabItem>
 
@@ -256,7 +258,8 @@ Once everything is running smoothly, updating your application code is very stra
           unleashConfig = UnleashConfig.newBuilder(appName = "codesandbox-android")
               // highlight-next-line
               .proxyUrl("http://10.0.2.2:3063/api/frontend/")
-              .clientKey("<your_client_token>")
+              // highlight-next-line
+              .clientKey("<your_frontend_token>")
               .build()
       )
     ```
@@ -275,7 +278,8 @@ Once everything is running smoothly, updating your application code is very stra
       var unleash = UnleashClient(
         // highlight-next-line
         url: Uri.parse('http://localhost:3063/api/frontend/'),
-        clientKey: '<your_client_token>',
+        // highlight-next-line
+        clientKey: '<your_frontend_token>',
         refreshInterval: 5,
         appName: 'local-flutter',
       );
@@ -293,10 +297,11 @@ Once everything is running smoothly, updating your application code is very stra
   </TabItem>
 
   <TabItem value="go" label="Go" default>
-    For example, if you're using the [Go example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Go), update the `UNLEASH_API_URL` environment variable in your `.env` file:
+    For example, if you're using the [Go example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Go), update the API URL and token in your `.env` file:
 
     ```text title=".env"
     UNLEASH_API_URL=http://localhost:3063/api
+    UNLEASH_API_TOKEN=<your_backend_token>
     ```
   </TabItem>
 
@@ -307,7 +312,8 @@ Once everything is running smoothly, updating your application code is very stra
       var flag = "example-flag";
       // highlight-next-line
       var url = "http://localhost:3063/api/";
-      var token = "<your_client_token>";
+      // highlight-next-line
+      var token = "<your_backend_token>";
 
     ```
   </TabItem>
@@ -319,7 +325,8 @@ Once everything is running smoothly, updating your application code is very stra
     const unleash = new UnleashClient({
         // highlight-next-line
         url: "http://localhost:3063/api/frontend/",
-        clientKey: "<your_client_token>",
+        // highlight-next-line
+        clientKey: "<your_frontend_token>",
         appName: "javascript-codesandbox",
     });
     ```
@@ -327,34 +334,38 @@ Once everything is running smoothly, updating your application code is very stra
 
 
   <TabItem value="next.js" label="Next.js" default>
-    For example, if you're using the [Next.js example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Next.js), update the `NEXT_PUBLIC_UNLEASH_SERVER_API_URL` environment variable in your `.env` file:
+    For example, if you're using the [Next.js example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Next.js), update the API URL and token in your `.env` file:
 
     ```text title=".env"
     NEXT_PUBLIC_UNLEASH_SERVER_API_URL=http://localhost:3063/api
+    NEXT_PUBLIC_UNLEASH_FRONTEND_API_TOKEN=<your_frontend_token>
     ```
   </TabItem>
 
   <TabItem value="node.js" label="Node.js" default>
-    For example, if you're using the [Node.js example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Node.js), update the `UNLEASH_API_URL` environment variable in your `.env` file:
+    For example, if you're using the [Node.js example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Node.js), update the API URL and token in your `.env` file:
 
     ```text title=".env"
     UNLEASH_API_URL=http://localhost:3063/api
+    UNLEASH_API_TOKEN=<your_backend_token>
     ```
   </TabItem>
 
   <TabItem value="php" label="PHP" default>
-    For example, if you're using the [PHP example](https://github.com/Unleash/unleash-sdk-examples/tree/main/PHP), update the `UNLEASH_API_URL` environment variable in your `.env` file:
+    For example, if you're using the [PHP example](https://github.com/Unleash/unleash-sdk-examples/tree/main/PHP), update the API URL and token in your `.env` file:
 
     ```text title=".env"
     UNLEASH_API_URL=http://localhost:3063/api
+    UNLEASH_API_TOKEN=<your_backend_token>
     ```
   </TabItem>
 
   <TabItem value="python" label="Python" default>
-  For example, if you're using the [Python example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Python), update the `UNLEASH_API_URL` environment variable in your `.env` file:
+  For example, if you're using the [Python example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Python), update the API URL and token in your `.env` file:
 
     ```text title=".env"
     UNLEASH_API_URL=http://localhost:3063/api
+    UNLEASH_API_TOKEN=<your_backend_token>
     ```
   </TabItem>
 
@@ -366,7 +377,8 @@ Once everything is running smoothly, updating your application code is very stra
       config={{
         // highlight-next-line
         url: "http://localhost:3063/api/frontend/", // Unleash Edge running locally
-        clientKey: "<your_client_token>",
+        // highlight-next-line
+        clientKey: "<your_frontend_token>",
         refreshInterval: 15,
         appName: "codesandbox-react",
       }}
@@ -375,18 +387,20 @@ Once everything is running smoothly, updating your application code is very stra
   </TabItem>
 
   <TabItem value="ruby" label="Ruby" default>
-    For example, if you're using the [Ruby example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Ruby), update the `UNLEASH_API_URL` environment variable in your `.env` file:
+    For example, if you're using the [Ruby example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Ruby), update the API URL and token in your `.env` file:
 
     ```text title=".env"
     UNLEASH_API_URL=http://localhost:3063/api
+    UNLEASH_API_TOKEN=<your_backend_token>
     ```
   </TabItem>
 
   <TabItem value="rust" label="Rust" default>
-    For example, if you're using the [Rust example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Rust), update the `UNLEASH_API_URL` environment variable in your `.env` file:
+    For example, if you're using the [Rust example](https://github.com/Unleash/unleash-sdk-examples/tree/main/Rust), update the API URL and token in your `.env` file:
 
     ```text title=".env"
     UNLEASH_API_URL=http://localhost:3063/api
+    UNLEASH_API_TOKEN=<your_backend_token>
     ```
   </TabItem>
 
@@ -397,7 +411,8 @@ Once everything is running smoothly, updating your application code is very stra
     const config = {
       // highlight-next-line
       url: 'http://localhost:3063/api/frontend/',
-      clientKey: '<your_client_token>',
+      // highlight-next-line
+      clientKey: '<your_frontend_token>',
       refreshInterval: 5,
       metricsInterval: 5,
       appName: 'codesandbox-svelte'
@@ -412,7 +427,8 @@ Once everything is running smoothly, updating your application code is very stra
     var unleashClient =  UnleashProxyClientSwift.UnleashClientBase(
         // highlight-next-line
         unleashUrl: "http://localhost:3063/api/frontend/",
-        clientKey: "<your_client_token>",
+        // highlight-next-line
+        clientKey: "<your_frontend_token>",
         refreshInterval: 15,
         appName: "codesandbox-swift",
         context: [:]
@@ -435,7 +451,8 @@ Once everything is running smoothly, updating your application code is very stra
     const config = {
       // highlight-next-line
       url: 'http://localhost:3063/api/frontend/',
-      clientKey: '<your_client_token>',
+      // highlight-next-line
+      clientKey: '<your_frontend_token>',
       refreshInterval: 5,
       metricsInterval: 5,
       appName: 'codesandbox-vue'
@@ -448,7 +465,7 @@ Once everything is running smoothly, updating your application code is very stra
 
 ## How to verify your setup
 
-Should you encounter any issues while connecting your SDK to Unleash Edge, use the following commands to help identify the problem.
+In case of issues while connecting your SDK to Unleash Edge, the following commands will help you identify the problem.
 
 ```shell
 # is the local Unleash instance running correctly?
@@ -465,8 +482,9 @@ curl -H "Authorization: <your_token>" http://localhost:3063/api/client/features
 
 You might encounter some of these common issues:
 
-- If Unleash Edge logs show "connection refused" to `127.0.0.1:4242` within Docker, you're pointing at `localhost` inside the container. Use `host.docker.internal` or a shared Docker network instead.
-- If you get "401/invalid token", ensure you're using a valid token from your Unleash instance that matches the environment and project you expect.
+- If Unleash Edge logs show "connection refused" to `127.0.0.1:4242` within Docker, you're pointing at `localhost` inside the container. Use `host.docker.internal` or a shared Docker network.
+- If Unleash Edge logs show "Edge was not able to validate any of the tokens configured at startup", make sure you're using a valid backend token in your Edge command
+- If your SDK logs show "401/invalid token", ensure you're using a valid token from your Unleash instance that matches the environment and project you expect.
 
 ## Next steps
 
@@ -479,3 +497,4 @@ Unleash Edge comes with a lot of flexibility and advanced configuration options 
 3. [Security considerations in production](https://github.com/Unleash/unleash-edge/blob/main/docs/deploying.md) - Learn how to run Unleash Edge in production with the best practices for CORS, health checks, and sensitive endpoints.
 4. [Persistent cache storage](https://github.com/Unleash/unleash-edge/blob/main/docs/CLI.md#unleash-edge-edge) - Learn how to enable persistent storage for caching with options such as `--backup-folder` and `--redis-url`.
 5. [Advanced CLI config](https://github.com/Unleash/unleash-edge/blob/main/docs/CLI.md) - Learn how to customize the CLI behavior with options such as `--base-path`, `--workers`, `--allow-list`, `--edge-request-timeout`, or `--edge-auth-header`.
+
