@@ -465,7 +465,7 @@ Once everything is running smoothly, you can update your application code.
 
 ## How to verify your setup
 
-In case of issues while connecting your SDK to Unleash Edge, the following commands will help you identify the problem.
+If you run into issues while connecting your SDK to Unleash Edge, the following commands can help you identify the problem.
 
 ```shell
 # is the local Unleash instance running correctly?
@@ -482,19 +482,18 @@ curl -H "Authorization: <your_token>" http://localhost:3063/api/client/features
 
 You might encounter some of these common issues:
 
-- If Unleash Edge logs show "connection refused" to `127.0.0.1:4242` within Docker, you're pointing at `localhost` inside the container. Use `host.docker.internal` or a shared Docker network.
-- If Unleash Edge logs show "Edge was not able to validate any of the tokens configured at startup", make sure you're using a valid backend token in your Edge command
-- If your SDK logs show "401/invalid token", ensure you're using a valid token from your Unleash instance that matches the environment and project you expect.
+- If Unleash Edge logs show "connection refused" to `127.0.0.1:4242` within Docker, you're pointing at `localhost` inside the container. Use `host.docker.internal` or a shared Docker network instead.
+- If Unleash Edge logs show "Edge was not able to validate any of the tokens configured at startup" make sure you're using a valid backend token in your Edge startup command.
+- If your SDK logs show "401/invalid token" ensure you're using a valid token from your Unleash instance that matches the environment and project you expect.
 
 ## Next steps
 
-Congratulations, you successfully set up Unleash Edge locally!
+Congratulations, you've successfully set up Unleash Edge locally!
 
-Unleash Edge comes with a lot of flexibility and advanced configuration options that are worth exploring next:
+Unleash Edge offers a lot of flexibility and advanced configuration options worth exploring:
 
 1. [Offline mode](https://github.com/Unleash/unleash-edge/blob/main/docs/concepts.md#offline) - Learn how to configure Unleash Edge to work without an Unleash instance, using a local features file.
 2. [Pretrusted tokens](https://github.com/Unleash/unleash-edge/blob/main/README.md#pretrusted-tokens) - Learn how to explicitly authorize known frontend tokens without upstream validation.
-3. [Security considerations in production](https://github.com/Unleash/unleash-edge/blob/main/docs/deploying.md) - Learn how to run Unleash Edge in production with the best practices for CORS, health checks, and sensitive endpoints.
-4. [Persistent cache storage](https://github.com/Unleash/unleash-edge/blob/main/docs/CLI.md#unleash-edge-edge) - Learn how to enable persistent storage for caching with options such as `--backup-folder` and `--redis-url`.
-5. [Advanced CLI config](https://github.com/Unleash/unleash-edge/blob/main/docs/CLI.md) - Learn how to customize the CLI behavior with options such as `--base-path`, `--workers`, `--allow-list`, `--edge-request-timeout`, or `--edge-auth-header`.
-
+3. [Security considerations in production](https://github.com/Unleash/unleash-edge/blob/main/docs/deploying.md) - Learn how to run Unleash Edge in production with best practices for CORS, health checks, and sensitive endpoints.
+4. [Persistent cache storage](https://github.com/Unleash/unleash-edge/blob/main/docs/CLI.md#unleash-edge-edge) - Learn how to enable persistent cache storage with options such as `--backup-folder` and `--redis-url`.
+5. [Advanced CLI configuration](https://github.com/Unleash/unleash-edge/blob/main/docs/CLI.md) - Learn how to customize the CLI behavior with options such as `--base-path`, `--workers`, `--allow-list`, `--edge-request-timeout`, or `--edge-auth-header`.
