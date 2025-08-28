@@ -1,7 +1,7 @@
 services:
   unleash:
-    # pin to 7.0.6 to avoid "backend" token type issue
-    image: unleashorg/unleash-server:7.0.6
+    # pin to 7.1.0 to avoid "backend" token type issue
+    image: unleashorg/unleash-server:7.1.0
     pull_policy: always
     ports:
       - "4242:4242"
