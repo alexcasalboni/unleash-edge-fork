@@ -46,6 +46,7 @@ First, make sure your Unleash instance is running (locally or remotely) and gene
 
 
 <Tabs groupId="method">
+
   <TabItem value="rust" label="Rust toolchain" default>
     If you're comfortable with the Rust toolchain, install the CLI with [cargo binstall](https://github.com/cargo-bins/cargo-binstall?tab=readme-ov-file#installation) (or [from source](https://github.com/Unleash/unleash-edge/blob/main/docs/development-guide.md)):
 
@@ -87,6 +88,24 @@ First, make sure your Unleash instance is running (locally or remotely) and gene
       --upstream-url <your_unleash_instance> \
       --tokens '<your_client_token>'
     ```
+
+  </TabItem>
+
+  <TabItem value="docker-compose" label="Docker Compose" default>
+    Launch the `examples/docker-compose.yml` file:
+
+    ```shell
+    git clone https://github.com/unleash/unleash-edge/
+    cd unleash-edge/examples
+    docker compose up
+    ```
+
+    :::info[Docker Compose services]
+
+    Please note that the sample Docker Compose file includes a Redis service for caching.
+    In case you want to run Unleash Edge without Redis, make sure to remove the `REDIS_URL` environment variable and the Redis service.
+
+    :::
 
   </TabItem>
 
@@ -132,6 +151,12 @@ Let's break down the parameters you need to replace in the command above.
   </TabItem>
 
   <TabItem value="github-release" label="GitHub Release installer">
+    This is the URL of your Unleash instance.
+
+    Use the base URL, e.g. `https://app.unleash-hosted.com/testclient` or `http://localhost:4242`.
+  </TabItem>
+
+  <TabItem value="docker-compose" label="Docker Compose">
     This is the URL of your Unleash instance.
 
     Use the base URL, e.g. `https://app.unleash-hosted.com/testclient` or `http://localhost:4242`.
