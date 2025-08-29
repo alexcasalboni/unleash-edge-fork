@@ -13,7 +13,7 @@ Its goal is to expose the same HTTP interface while providing higher throughput.
 
 <Tabs>
   <TabItem value="performance" label="Performance & UX" default>
-    Especially for frontend clients, Unleash Edge helps you reduce latency for flag resolution by running closer to your users. For example, Unleash Edge could run on a global CDN (Content Delivery Network) or as part of your on-premises infrastructure.
+    Especially for frontend clients, Unleash Edge helps you reduce latency for flag resolution by running closer to your users. For example, Unleash Edge could run on a global CDN (Content Delivery Network) or as part of your cloud/on-premises infrastructure.
 
     Setting up one or more Edge nodes helps you distribute traffic and reduce the load on your Unleash instance. By default, Unleash Edge relies on in-memory caching, but you can configure it to use Redis or the local filesystem.
   </TabItem>
@@ -91,24 +91,6 @@ First, make sure your Unleash instance is running (locally or remotely) and gene
 
   </TabItem>
 
-  <TabItem value="docker-compose" label="Docker Compose">
-    Launch the [examples/docker-compose.yml](https://github.com/Unleash/unleash-edge/blob/main/examples/docker-compose.yml) file:
-
-    ```shell
-    git clone https://github.com/unleash/unleash-edge/
-    cd unleash-edge/examples
-    docker compose up
-    ```
-
-    :::info[Docker Compose services]
-
-    Please note that the sample Docker Compose file includes a Redis service for caching.
-    In case you want to run Unleash Edge without Redis, make sure to remove the `REDIS_URL` environment variable and the Redis service.
-
-    :::
-
-  </TabItem>
-
   <TabItem value="docker" label="Docker">
     Launch Unleash Edge locally with Docker:
 
@@ -131,13 +113,29 @@ First, make sure your Unleash instance is running (locally or remotely) and gene
     :::
 
   </TabItem>
+
+  <TabItem value="docker-compose" label="Docker Compose">
+    Launch the [examples/docker-compose.yml](https://github.com/Unleash/unleash-edge/blob/main/examples/docker-compose.yml) file:
+
+    ```shell
+    git clone https://github.com/unleash/unleash-edge/
+    cd unleash-edge/examples
+    docker compose up
+    ```
+
+    :::info[Docker Compose services]
+
+    Please note that the sample Docker Compose file includes a Redis service for caching.
+    In case you want to run Unleash Edge without Redis, make sure to remove the `REDIS_URL` environment variable and the Redis service.
+
+    :::
+
+  </TabItem>
 </Tabs>
 
 #### Required parameters
 
 Let's break down the parameters you need to replace in the command above.
-
----
 
 ### `<your_unleash_instance>`
 
@@ -151,12 +149,6 @@ Let's break down the parameters you need to replace in the command above.
   </TabItem>
 
   <TabItem value="github-release" label="GitHub Release installer">
-    This is the URL of your Unleash instance.
-
-    Use the base URL, e.g. `https://app.unleash-hosted.com/testclient` or `http://localhost:4242`.
-  </TabItem>
-
-  <TabItem value="docker-compose" label="Docker Compose">
     This is the URL of your Unleash instance.
 
     Use the base URL, e.g. `https://app.unleash-hosted.com/testclient` or `http://localhost:4242`.
@@ -208,30 +200,70 @@ Let's break down the parameters you need to replace in the command above.
 
     :::
   </TabItem>
+
+  <TabItem value="docker-compose" label="Docker Compose">
+    This parameter is managed for you in the Docker Compose file.
+
+    Because both containers run on the same network, the instance is referenced using the service name: `http://unleash:4242`.
+  </TabItem>
 </Tabs>
 
 ---
 
 ### `<your_backend_token>`
 
-This API token is required in strict mode, which is recommended since `v19.2+`.
+<Tabs groupId="method">
 
-You can generate a new API token by visiting your Unleash instance, under **Admin settings → Access control → API access**.
-Click **New API token**, give it a name, and confirm the default values.
+  <TabItem value="rust" label="Rust toolchain" default>
+    This API token is required in strict mode, which is recommended since `v19.2+`.
 
-Note: make sure you keep the single quotes in `-e TOKENS='...'` so the `*` isn't expanded by your shell. 
+    You can generate a new API token by visiting your Unleash instance, under **Admin settings → Access control → API access**. Click **New API token**, give it a name, and confirm the default values.
+
+    Note: make sure you keep the single quotes in `--tokens '...'` so the `*` isn't expanded by your shell.
+  </TabItem>
+
+  <TabItem value="github-release" label="GitHub Release installer">
+    This API token is required in strict mode, which is recommended since `v19.2+`.
+
+    You can generate a new API token by visiting your Unleash instance, under **Admin settings → Access control → API access**. Click **New API token**, give it a name, and confirm the default values.
+
+    Note: make sure you keep the single quotes in `--tokens '...'` so the `*` isn't expanded by your shell.
+  </TabItem>
+
+  <TabItem value="docker" label="Docker">
+    This API token is required in strict mode, which is recommended since `v19.2+`.
+
+    You can generate a new API token by visiting your Unleash instance, under **Admin settings → Access control → API access**. Click **New API token**, give it a name, and confirm the default values.
+
+    Note: make sure you keep the single quotes in `-e TOKENS='...'` so the `*` isn't expanded by your shell.
+  </TabItem>
+
+  <TabItem value="docker-compose" label="Docker Compose">
+    This parameter is managed for you in the Docker Compose file.
+
+    You can customize the default tokens by editing the Unleash environment variables:
+
+    ```yaml
+    services:
+      unleash:
+        environment:
+          INIT_FRONTEND_API_TOKENS: "default:development.unleash-insecure-frontend-api-token"
+          INIT_CLIENT_API_TOKENS: "default:development.unleash-insecure-api-token"
+    ```
+
+    Unleash Edge is automatically configured with the same (backend) token.
+
+  </TabItem>
+
+</Tabs>
 
 ## How to update your application
 
 Before you continue, make sure Unleash Edge is running on port `3063`.
 
-You can verify this by fetching `http://localhost:3063/internal-backstage/health`.
+You can verify this by fetching `http://localhost:3063/internal-backstage/health`. If Unleash Edge is set up correctly, this endpoint should respond with `{"status":"OK"}`.
 
-This endpoint should respond with `{"status":"OK"}`.
-
----
-
-Once everything is running smoothly, you can update your application code.
+Once everything is running smoothly, you can update your application:
 
 1. Identify the code or configuration file where the Unleash instance URL is defined.
 2. Update the SDK configuration to use `http://localhost:3063`.
@@ -477,14 +509,14 @@ curl http://localhost:3063/internal-backstage/health
 unleash-edge health
 
 # is data going through? is my token valid?
-curl -H "Authorization: <your_token>" http://localhost:3063/api/client/features
+curl -H "Authorization: <your_backend_token>" http://localhost:3063/api/client/features
 ```
 
 You might encounter some of these common issues:
 
-- If Unleash Edge logs show "connection refused" to `127.0.0.1:4242` within Docker, you're pointing at `localhost` inside the container. Use `host.docker.internal` or a shared Docker network instead.
-- If Unleash Edge logs show "Edge was not able to validate any of the tokens configured at startup" make sure you're using a valid backend token in your Edge startup command.
-- If your SDK logs show "401/invalid token" ensure you're using a valid token from your Unleash instance that matches the environment and project you expect.
+- If Unleash Edge logs show *"connection refused"* to `127.0.0.1:4242` within Docker, you're pointing at `localhost` inside the container. Use `host.docker.internal` or a shared Docker network instead.
+- If Unleash Edge logs show *"Edge was not able to validate any of the tokens configured at startup"* make sure you're using a valid backend token in your startup command.
+- If your SDK logs show *"401/invalid token"* ensure you're using a valid token from your Unleash instance that matches the environment and project you expect.
 
 ## Next steps
 
@@ -496,4 +528,4 @@ Unleash Edge offers a lot of flexibility and advanced configuration options wort
 2. [Pretrusted tokens](https://github.com/Unleash/unleash-edge/blob/main/README.md#pretrusted-tokens) - Learn how to explicitly authorize known frontend tokens without upstream validation.
 3. [Security considerations in production](https://github.com/Unleash/unleash-edge/blob/main/docs/deploying.md) - Learn how to run Unleash Edge in production with best practices for CORS, health checks, and sensitive endpoints.
 4. [Persistent cache storage](https://github.com/Unleash/unleash-edge/blob/main/docs/CLI.md#unleash-edge-edge) - Learn how to enable persistent cache storage with options such as `--backup-folder` and `--redis-url`.
-5. [Advanced CLI configuration](https://github.com/Unleash/unleash-edge/blob/main/docs/CLI.md) - Learn how to customize the CLI behavior with options such as `--base-path`, `--workers`, `--allow-list`, `--edge-request-timeout`, or `--edge-auth-header`.
+5. [Advanced CLI configuration](https://github.com/Unleash/unleash-edge/blob/main/docs/CLI.md) - Learn how to customize the CLI behavior with options such as `--base-path`, `--workers`, `--allow-list`, `--edge-request-timeout`, and `--edge-auth-header`.
