@@ -170,7 +170,7 @@ Let's break down the parameters you need to replace in the command above.
 
     :::warning[Important note about Docker and localhost]
 
-    When using Docker with a local Unleash instance, `localhost` will refer to the container itself so you cannot simply use `http://localhost:4242`.
+    When using Docker with a local Unleash instance, `localhost` refers to the container itself, so you cannot use `http://localhost:4242`.
     You'll need to use a different hostname, depending on where the Unleash instance is running.
 
     <Tabs>
